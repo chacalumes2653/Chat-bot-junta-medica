@@ -1,196 +1,194 @@
 <!DOCTYPE html>
 <html lang="es">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Asistente — Junta Médica PFA</title>
- <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
- <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-   --navy: #0a1628; --navy-mid: #112040; --navy-light: #1a3060;
-   --gold: #c8a84b; --gold-light: #e2c97e; --gold-dim: #8a6e2a;
-   --white: #f5f2eb; --white-dim: #d4cfc4; --muted: #8a8578;
-   --user-bg: #1a3060; --bot-bg: #0f1e38; --border: rgba(200,168,75,0.18);
-   --radius: 16px; --radius-sm: 10px;
-  }
-  html, body { height: 100%; background: var(--navy); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; }
-  .page { display: flex; flex-direction: column; height: 100dvh; max-width: 680px; margin: 0 auto; }
-  header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: var(--navy); flex-shrink: 0; }
-  .badge { width: 44px; height: 44px; border-radius: 50%; background: var(--gold-dim); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .badge svg { width: 22px; height: 22px; fill: var(--gold-light); }
-  .header-text h1 { font-size: 15px; font-weight: 600; color: var(--gold-light); letter-spacing: 0.02em; }
-  .header-text p { font-size: 12px; color: var(--muted); font-weight: 300; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ecf8e; margin-left: auto; box-shadow: 0 0 6px #3ecf8e88; animation: pulse 2.5s infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-  #messages { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
-  #messages::-webkit-scrollbar { width: 4px; }
-  #messages::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 4px; }
-  .msg-row { display: flex; gap: 10px; animation: fadeUp 0.25s ease; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .msg-row.user { flex-direction: row-reverse; }
-  .avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; margin-top: 2px; }
-  .avatar.bot { background: var(--gold-dim); color: var(--gold-light); border: 1px solid var(--gold); font-family: 'DM Mono', monospace; font-size: 10px; }
-  .avatar.user { background: var(--navy-light); color: var(--white-dim); border: 1px solid rgba(200,168,75,0.25); }
-  .bubble { max-width: 82%; padding: 11px 15px; border-radius: var(--radius); font-size: 14px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
-  .bubble.bot { background: var(--bot-bg); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--white); }
-  .bubble.user { background: var(--user-bg); border: 1px solid rgba(200,168,75,0.2); border-bottom-right-radius: 4px; color: var(--white); }
-  .typing-dots { display: flex; gap: 5px; align-items: center; padding: 4px 2px; }
-  .typing-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-dim); animation: dot-bounce 1.3s infinite; }
-  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes dot-bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-6px); opacity: 1; } }
-  #chips-wrap { padding: 0 16px 10px; display: flex; flex-wrap: wrap; gap: 7px; flex-shrink: 0; }
-  .chip { padding: 6px 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--navy-mid); color: var(--gold-light); font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; white-space: nowrap; }
-  .chip:hover { background: var(--navy-light); }
-  footer { padding: 12px 16px 20px; border-top: 1px solid var(--border); background: var(--navy); flex-shrink: 0; }
-  .input-row { display: flex; gap: 10px; align-items: flex-end; }
-  textarea { flex: 1; background: var(--navy-mid); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 11px 14px; resize: none; min-height: 44px; max-height: 120px; outline: none; transition: border-color 0.2s; line-height: 1.5; }
-  textarea::placeholder { color: var(--muted); }
-  textarea:focus { border-color: var(--gold-dim); }
-  .send-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s, transform 0.1s; }
-  
- </style></title>
- </head>.send-btn:hover { background: var(--gold-light); }
- .send-btn:active { transform: scale(0.94); }
- .send-btn:disabled { background: var(--gold-dim); cursor: not-allowed; opacity: 0.6; }
- .send-btn svg { width: 18px; height: 18px; fill: var(--navy); }
- .footer-note { text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px; }
- @media (max-width: 480px) { .bubble { max-width: 90%; } .chip { font-size: 11px; padding: 5px 11px; } }
-</html>style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente — Junta Médica PFA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+--navy: #0a1628; --navy-mid: #112040; --navy-light: #1a3060;
+--gold: #c8a84b; --gold-light: #e2c97e; --gold-dim: #8a6e2a;
+--white: #f5f2eb; --white-dim: #d4cfc4; --muted: #8a8578;
+--user-bg: #1a3060; --bot-bg: #0f1e38; --border: rgba(200,168,75,0.18);
+--radius: 16px; --radius-sm: 10px;
+}
+html, body { height: 100%; background: var(--navy); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; }
+.page { display: flex; flex-direction: column; height: 100dvh; max-width: 680px; margin: 0 auto; }
+header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; background: var(--navy); flex-shrink: 0; }
+.badge { width: 44px; height: 44px; border-radius: 50%; background: var(--gold-dim); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.badge svg { width: 22px; height: 22px; fill: var(--gold-light); }
+.header-text h1 { font-size: 15px; font-weight: 600; color: var(--gold-light); letter-spacing: 0.02em; }
+.header-text p { font-size: 12px; color: var(--muted); font-weight: 300; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ecf8e; margin-left: auto; box-shadow: 0 0 6px #3ecf8e88; animation: pulse 2.5s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+#messages { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
+#messages::-webkit-scrollbar { width: 4px; }
+#messages::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 4px; }
+.msg-row { display: flex; gap: 10px; animation: fadeUp 0.25s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.msg-row.user { flex-direction: row-reverse; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; margin-top: 2px; }
+.avatar.bot { background: var(--gold-dim); color: var(--gold-light); border: 1px solid var(--gold); font-family: 'DM Mono', monospace; font-size: 10px; }
+.avatar.user { background: var(--navy-light); color: var(--white-dim); border: 1px solid rgba(200,168,75,0.25); }
+.bubble { max-width: 82%; padding: 11px 15px; border-radius: var(--radius); font-size: 14px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.bubble.bot { background: var(--bot-bg); border: 1px solid var(--border); border-bottom-left-radius: 4px; color: var(--white); }
+.bubble.user { background: var(--user-bg); border: 1px solid rgba(200,168,75,0.2); border-bottom-right-radius: 4px; color: var(--white); }
+.typing-dots { display: flex; gap: 5px; align-items: center; padding: 4px 2px; }
+.typing-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-dim); animation: dot-bounce 1.3s infinite; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot-bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-6px); opacity: 1; } }
+#chips-wrap { padding: 0 16px 10px; display: flex; flex-wrap: wrap; gap: 7px; flex-shrink: 0; }
+.chip { padding: 6px 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--navy-mid); color: var(--gold-light); font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; white-space: nowrap; }
+.chip:hover { background: var(--navy-light); }
+footer { padding: 12px 16px 20px; border-top: 1px solid var(--border); background: var(--navy); flex-shrink: 0; }
+.input-row { display: flex; gap: 10px; align-items: flex-end; }
+textarea { flex: 1; background: var(--navy-mid); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 11px 14px; resize: none; min-height: 44px; max-height: 120px; outline: none; transition: border-color 0.2s; line-height: 1.5; }
+textarea::placeholder { color: var(--muted); }
+textarea:focus { border-color: var(--gold-dim); }
+.send-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s, transform 0.1s; }
+.send-btn:hover { background: var(--gold-light); }
+.send-btn:active { transform: scale(0.94); }
+.send-btn:disabled { background: var(--gold-dim); cursor: not-allowed; opacity: 0.6; }
+.send-btn svg { width: 18px; height: 18px; fill: var(--navy); }
+.footer-note { text-align: center; font-size: 11px; color: var(--muted); margin-top: 8px; }
+@media (max-width: 480px) { .bubble { max-width: 90%; } .chip { font-size: 11px; padding: 5px 11px; } }
+</style>
 </head>
 <body>
- <div class="page">
-  <header>
-   <div class="badge">
-    <svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2zm0 2.18l7 3.89V12c0 4.34-2.96 8.4-7 9.65C7.96 20.4 5 16.34 5 12V8.07l7-3.89zM11 8v5h2V8h-2zm0 6v2h2v-2h-2z"/></svg>svg>
-   </div>div>
-   <div class="header-text">
-    <h1>Asistente — Junta Médica PFA</h1>
-   <p>División Junta Permanente de Reconocimientos Médicos · SODI 188</p>
-   </div>div>
-  <div class="status-dot"></div>div>
-  </header>
- 
- <div id="messages">
- <div class="msg-row bot">
- <div class="avatar bot">JM</div>div>
- <div class="bubble bot">¡Hola! Soy el asistente de la Junta Permanente de Reconocimientos Médicos.
- 
- Puedo responder tus consultas sobre licencias médicas, servicios especiales, procedimientos administrativos y normativa vigente (SODI 188, Decreto 1866/83, RAPFA N°11).
- 
- ¿En qué te puedo ayudar?</div>div>
- </div>div>
- </div>div>
- 
- <div id="chips-wrap">
- <button class="chip" onclick="useChip(this)">¿Qué es licencia no ambulatoria?</button>button>
- <button class="chip" onclick="useChip(this)">¿Puedo salir de mi domicilio?</button>button>
- <button class="chip" onclick="useChip(this)">¿Cuándo interviene la JM?</button>button>
- <button class="chip" onclick="useChip(this)">¿Qué es servicio especial?</button>button>
- <button class="chip" onclick="useChip(this)">¿Cuándo se retira el armamento?</button>button>
- <button class="chip" onclick="useChip(this)">¿Cómo tramito el código GDE?</button>button>
- </div>div>
- 
- <footer>
-  <div class="input-row">
-   <textarea id="txt" placeholder="Escribí tu consulta..." rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
-   <button class="send-btn" id="sendBtn" onclick="send()">
-    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>svg>
-   </button>button>
-  </div>div>
-  <p class="footer-note">Basado en la normativa oficial · Solo orientativo · Junta Médica PFA</p>p>
- </footer>
- </div>div>
+<div class="page">
+<header>
+<div class="badge">
+<svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2zm0 2.18l7 3.89V12c0 4.34-2.96 8.4-7 9.65C7.96 20.4 5 16.34 5 12V8.07l7-3.89zM11 8v5h2V8h-2zm0 6v2h2v-2h-2z"/></svg>
+</div>
+<div class="header-text">
+<h1>Asistente — Junta Médica PFA</h1>
+<p>División Junta Permanente de Reconocimientos Médicos · SODI 188</p>
+</div>
+<div class="status-dot"></div>
+</header>
 
- <script>
-  // La clave de Anthropic NO vive acá. Este archivo solo le habla a un backend
-  // propio (Cloudflare Worker) que guarda la clave del lado del servidor.
-  // Reemplazá esta URL por la que te da `wrangler deploy`.
-  const API_URL = 'https://jpm-chatbot-proxy.jprm-presentismo.workers.dev';
+<div id="messages">
+<div class="msg-row bot">
+<div class="avatar bot">JM</div>
+<div class="bubble bot">¡Hola! Soy el asistente de la Junta Permanente de Reconocimientos Médicos.
 
-  const history = [];
+Puedo responder tus consultas sobre licencias médicas, servicios especiales, procedimientos administrativos y normativa vigente (SODI 188, Decreto 1866/83, RAPFA N°11).
 
-  async function send() {
-   const txt = document.getElementById('txt');
-   const msg = txt.value.trim();
-   if (!msg) return;
+¿En qué te puedo ayudar?</div>
+</div>
+</div>
 
-   addMsg(msg, 'user');
-   txt.value = '';
-   autoResize(txt);
-   document.getElementById('chips-wrap').style.display = 'none';
-   document.getElementById('sendBtn').disabled = true;
+<div id="chips-wrap">
+<button class="chip" onclick="useChip(this)">¿Qué es licencia no ambulatoria?</button>
+<button class="chip" onclick="useChip(this)">¿Puedo salir de mi domicilio?</button>
+<button class="chip" onclick="useChip(this)">¿Cuándo interviene la JM?</button>
+<button class="chip" onclick="useChip(this)">¿Qué es servicio especial?</button>
+<button class="chip" onclick="useChip(this)">¿Cuándo se retira el armamento?</button>
+<button class="chip" onclick="useChip(this)">¿Cómo tramito el código GDE?</button>
+</div>
 
-   const typingEl = addTyping();
-   history.push({ role: 'user', content: msg });
+<footer>
+<div class="input-row">
+<textarea id="txt" placeholder="Escribí tu consulta..." rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
+<button class="send-btn" id="sendBtn" onclick="send()">
+<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+</button>
+</div>
+<p class="footer-note">Basado en la normativa oficial · Solo orientativo · Junta Médica PFA</p>
+</footer>
+</div>
 
-   try {
-    const res = await fetch(API_URL, {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({ messages: history })
-    });
+<script>
+// La clave de Anthropic NO vive acá. Este archivo solo le habla a un backend
+// propio (Cloudflare Worker) que guarda la clave del lado del servidor.
+// Reemplazá esta URL por la que te da `wrangler deploy`.
+const API_URL = 'https://jpm-chatbot-proxy.jprm-presentismo.workers.dev';
 
-    const data = await res.json();
-    const reply = data.reply || data.error || 'No pude obtener una respuesta. Intentá de nuevo.';
-    typingEl.remove();
-    history.push({ role: 'assistant', content: reply });
-    addMsg(reply, 'bot');
-   } catch (e) {
-    typingEl.remove();
-    addMsg('Error de conexión. Por favor intentá de nuevo.', 'bot');
-   }
+const history = [];
 
-   document.getElementById('sendBtn').disabled = false;
-  }
+async function send() {
+const txt = document.getElementById('txt');
+const msg = txt.value.trim();
+if (!msg) return;
 
-  function addMsg(text, who) {
-   const wrap = document.getElementById('messages');
-   const row = document.createElement('div');
-   row.className = `msg-row ${who}`;
-   const av = document.createElement('div');
-   av.className = `avatar ${who}`;
-   av.textContent = who === 'bot' ? 'JM' : 'Vos';
-   const bub = document.createElement('div');
-   bub.className = `bubble ${who}`;
-   bub.textContent = text;
-   row.appendChild(av);
-   row.appendChild(bub);
-   wrap.appendChild(row);
-   wrap.scrollTop = wrap.scrollHeight;
-  }
+addMsg(msg, 'user');
+txt.value = '';
+autoResize(txt);
+document.getElementById('chips-wrap').style.display = 'none';
+document.getElementById('sendBtn').disabled = true;
 
-  function addTyping() {
-   const wrap = document.getElementById('messages');
-   const row = document.createElement('div');
-   row.className = 'msg-row bot';
-   const av = document.createElement('div');
-   av.className = 'avatar bot';
-   av.textContent = 'JM';
-   const bub = document.createElement('div');
-   bub.className = 'bubble bot';
-   bub.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-   row.appendChild(av);
-   row.appendChild(bub);
-   wrap.appendChild(row);
-   wrap.scrollTop = wrap.scrollHeight;
-   return row;
-  }
+const typingEl = addTyping();
+history.push({ role: 'user', content: msg });
 
-  function useChip(el) {
-   document.getElementById('txt').value = el.textContent;
-   send();
-  }
+try {
+const res = await fetch(API_URL, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ messages: history })
+});
 
-  function onKey(e) {
-   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
-  }
+const data = await res.json();
+const reply = data.reply || data.error || 'No pude obtener una respuesta. Intentá de nuevo.';
+typingEl.remove();
+history.push({ role: 'assistant', content: reply });
+addMsg(reply, 'bot');
+} catch (e) {
+typingEl.remove();
+addMsg('Error de conexión. Por favor intentá de nuevo.', 'bot');
+}
 
-  function autoResize(el) {
-   el.style.height = 'auto';
-   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
- </script>
+document.getElementById('sendBtn').disabled = false;
+}
+
+function addMsg(text, who) {
+const wrap = document.getElementById('messages');
+const row = document.createElement('div');
+row.className = `msg-row ${who}`;
+const av = document.createElement('div');
+av.className = `avatar ${who}`;
+av.textContent = who === 'bot' ? 'JM' : 'Vos';
+const bub = document.createElement('div');
+bub.className = `bubble ${who}`;
+bub.textContent = text;
+row.appendChild(av);
+row.appendChild(bub);
+wrap.appendChild(row);
+wrap.scrollTop = wrap.scrollHeight;
+}
+
+function addTyping() {
+const wrap = document.getElementById('messages');
+const row = document.createElement('div');
+row.className = 'msg-row bot';
+const av = document.createElement('div');
+av.className = 'avatar bot';
+av.textContent = 'JM';
+const bub = document.createElement('div');
+bub.className = 'bubble bot';
+bub.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+row.appendChild(av);
+row.appendChild(bub);
+wrap.appendChild(row);
+wrap.scrollTop = wrap.scrollHeight;
+return row;
+}
+
+function useChip(el) {
+document.getElementById('txt').value = el.textContent;
+send();
+}
+
+function onKey(e) {
+if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+}
+
+function autoResize(el) {
+el.style.height = 'auto';
+el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+</script>
 </body>
 </html>
